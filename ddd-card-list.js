@@ -5,7 +5,7 @@
 import { LitElement, html, css } from "lit";
 import { DDDSuper } from "@haxtheweb/d-d-d/d-d-d.js";
 import { I18NMixin } from "@haxtheweb/i18n-manager/lib/I18NMixin.js";
-
+import "./ddd-card.js";
 /**
  * `ddd-card-list`
  * 
@@ -20,12 +20,10 @@ export class DddCardList extends DDDSuper(I18NMixin(LitElement)) {
 
   constructor() {
     super();
-    this.title = "";
-    this.t = this.t || {};
-    this.t = {
-      ...this.t,
-      title: "Title",
-    };
+    this.accent = "";
+    this.primary = "";
+    
+
     this.registerLocalization({
       context: this,
       localesPath:
@@ -39,7 +37,8 @@ export class DddCardList extends DDDSuper(I18NMixin(LitElement)) {
   static get properties() {
     return {
       ...super.properties,
-      title: { type: String },
+      accent: { type: String, reflect: true, attribute: "ddd-accent" },
+      primary: { type: String, reflect: true, attribute: "ddd-primary" },
     };
   }
 
@@ -48,28 +47,63 @@ export class DddCardList extends DDDSuper(I18NMixin(LitElement)) {
     return [super.styles,
     css`
       :host {
-        display: block;
+        display: inline-block;
         color: var(--ddd-theme-primary);
         background-color: var(--ddd-theme-accent);
         font-family: var(--ddd-font-navigation);
-      }
-      .wrapper {
-        margin: var(--ddd-spacing-2);
         padding: var(--ddd-spacing-4);
+        margin: var(--ddd-spacing-4);
       }
-      h3 span {
-        font-size: var(--ddd-card-list-label-font-size, var(--ddd-font-size-s));
+      
+      .container {
+        display: inline-block;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: var(--ddd-spacing-2);
       }
+
+
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+          align-items: center;
+        }
+      }
+
     `];
+  }
+
+  updated(changedProperties){
+    super.updated(changedProperties);
+    this.updatedCardProperties();
+    this.updateAccentColor();
+  }
+
+
+  updatedCardProperties() {
+    const cards = this.querySelectorAll("ddd-card");
+    cards.forEach((card) => {
+      if(this.primary) {
+        card.primary = this.primary;
+      }
+    });
+  }
+
+  updateAccentColor() {
+    if (this.accent) {
+      this.style.setProperty(
+        'background-color',
+        `var(--ddd-primary-${this.accent})`
+      );
+    }
   }
 
   // Lit render the HTML
   render() {
     return html`
-<div class="wrapper">
-  <h3><span>${this.t.title}:</span> ${this.title}</h3>
-  <slot></slot>
-</div>`;
+      <div class="container">
+        <slot></slot>
+      </div>`;
   }
 
   /**

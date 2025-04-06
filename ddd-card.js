@@ -23,7 +23,7 @@ export class DddCard extends DDDSuper(I18NMixin(LitElement)) {
     this.title = "",
     this.link = "",
     this.image = "",
-
+    this.primary = "",
     
     this.registerLocalization({
       context: this,
@@ -41,6 +41,7 @@ export class DddCard extends DDDSuper(I18NMixin(LitElement)) {
       title: { type: String },
       link: { type: String },
       image: { type: String },
+      primary: { type: String },
     };
   }
 
@@ -49,15 +50,13 @@ export class DddCard extends DDDSuper(I18NMixin(LitElement)) {
     return [super.styles,
     css`
       :host {
-        display: block;
+        display: inline-block;
         color: var(--ddd-theme-primary);
-        background-color: var(--ddd-theme-accent);
         font-family: var(--ddd-font-navigation);
-        width: 400px;
+        width: 450px;
+        height: 600px;
         overflow: hidden;
         background-color: var(--ddd-theme-default-white);
-        border: var(--ddd-border-sm);
-        border-color: var(--ddd-theme-default-white);
         border-radius: var(--ddd-radius-sm);
       }
 
@@ -65,14 +64,20 @@ export class DddCard extends DDDSuper(I18NMixin(LitElement)) {
         display: flex;
         flex-direction: column;
         border-radius: var(--ddd-radius-sm);
-        border: none;
+        width: 100%;
+        height: 100%;
         overflow: hidden;
         background: var(--ddd-theme-default-white);
-        width: 100%;
       }
       
       .content {
         padding: var(--ddd-spacing-4);
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        justify-content: space-between;
+        padding: var(--ddd-spacing-4);
+        overflow: hidden;
       }
 
       .title {
@@ -86,7 +91,6 @@ export class DddCard extends DDDSuper(I18NMixin(LitElement)) {
       .image {
         position: relative;
         width: 100%;
-        height: 100%;
         overflow: hidden;
       }
 
@@ -105,11 +109,15 @@ export class DddCard extends DDDSuper(I18NMixin(LitElement)) {
       }
 
       .desc {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
         font-size: var(--ddd-font-size-3xs);
         color: var(--ddd-primary-2);
         line-height: 1.4;
         margin-bottom: var(--ddd-spacing-4);
         text-align: left;
+        
       }
 
       .link {
@@ -124,6 +132,14 @@ export class DddCard extends DDDSuper(I18NMixin(LitElement)) {
         border-color: var(--ddd-primary-2);
         border-radius: var(--ddd-radius-sm);
         transition: background-color 0.2s ease-in-out;
+        flex-shrink: 0;
+      }
+
+      .link a {
+        display: block;
+        padding: inherit;
+        color: inherit;
+        text-decoration: none;
       }
 
       .link:hover {
@@ -132,20 +148,35 @@ export class DddCard extends DDDSuper(I18NMixin(LitElement)) {
       
     `];
   }
+  
 
+  updated(changedProperties) {
+    super.updated(changedProperties);
+
+    if (this.primary) {
+      const barElement = this.shadowRoot.querySelector('.bar');
+      if (barElement) {
+        barElement.style.setProperty(
+          'background-color',
+          `var(--ddd-primary-${this.primary})`
+        );
+      }
+    }
+  }
+ 
   // Lit render the HTML
   render() {
     return html`
     <div class ="card">
       <div class="image">
-      <img src="${this.image}"><img>
+      <img src="${this.image}" alt="">
       <div class="bar"></div>
       </div>
       <div class="content">
         <h3 class="title">${this.title}</h3>
         <p class="desc"><slot></slot></p>
         <div class="link">
-        <a href="${this.link}" target="_blank">Explore ></a>
+          <a href="${this.link}" target="_blank">Explore ></a>
         </div>
       </div>
 
