@@ -38,7 +38,7 @@ export class DddCardList extends DDDSuper(I18NMixin(LitElement)) {
     return {
       ...super.properties,
       accent: { type: String, reflect: true, attribute: "ddd-accent" },
-      primary: { type: String, reflect: true, attribute: "ddd-primary" },
+      primary: { type: String, reflect: true, attribute: "data-primary" },
     };
   }
 
@@ -47,27 +47,41 @@ export class DddCardList extends DDDSuper(I18NMixin(LitElement)) {
     return [super.styles,
     css`
       :host {
-        display: inline-block;
+        display: block;
         color: var(--ddd-theme-primary);
         background-color: var(--ddd-theme-accent);
         font-family: var(--ddd-font-navigation);
-        padding: var(--ddd-spacing-4);
-        margin: var(--ddd-spacing-4);
+        border: var(--ddd-border-sm);
       }
       
       .container {
-        display: inline-block;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 420px));
         justify-content: center;
-        padding: var(--ddd-spacing-2);
+        gap: var(--ddd-spacing-8);
+        width: 100%;
+        padding: var(--ddd-spacing-8);
+        box-sizing: border-box;
       }
 
+      @media (max-width: 1024px) {
+        .container {
+          grid-template-columns: repeat(2, minmax(0,420px));
+        }
+      }
 
+      
       @media (max-width: 768px) {
         .container {
-          flex-direction: column;
-          align-items: center;
+          grid-template-columns: 1fr;
+          gap: var(--ddd-spacing-4);
+          padding: var(--ddd-spacing-3);
         }
+
+        ::slotted(ddd-card) {
+          width: 100%;
+          max-width: 100%;
+          } 
       }
 
     `];
@@ -93,11 +107,12 @@ export class DddCardList extends DDDSuper(I18NMixin(LitElement)) {
     if (this.accent) {
       this.style.setProperty(
         'background-color',
-        `var(--ddd-primary-${this.accent})`
+        `var(--ddd-accent-${this.accent})`
       );
     }
   }
 
+  
   // Lit render the HTML
   render() {
     return html`
